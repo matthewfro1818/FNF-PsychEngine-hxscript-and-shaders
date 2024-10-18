@@ -1,6 +1,6 @@
 package psychlua;
 
-import meta.states.substate.GameOverSubstate;
+import substate.GameOverSubstate;
 import flixel.effects.FlxFlicker;
 import flixel.system.FlxBGSprite;
 import gameObjects.SpriteFromSheet;
@@ -18,8 +18,9 @@ import lime.app.Application;
 import meta.data.scripts.Globals.*;
 import flixel.addons.display.FlxRuntimeShader;
 import openfl.display.BlendMode;
-import meta.data.*;
-import meta.states.*;
+import backend.*;
+import objects.*;
+import states.*;
 import meta.states.editors.*;
 import gameObjects.*;
 #if sys
