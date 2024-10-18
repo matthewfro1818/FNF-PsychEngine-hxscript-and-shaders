@@ -53,7 +53,7 @@ import meta.data.Discord;
 
 using StringTools;
 
-class FunkinLua extends FunkinScript
+class FunkinLuaWeekly extends FunkinScript
 {
 
 	public var errorHandler:String->Void;
