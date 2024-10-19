@@ -29,9 +29,9 @@ class MainMenuState extends MusicBeatState
 
 	//Centered/Text options
 	var optionShit:Array<String> = [
-		#if MODS_ALLOWED 'mods', #end
-		#if DISCORD_ALLOWED 'discord', #end
-		'credits'
+		'play',
+		'extras',
+		'options'
 	];
 
 	var leftOption:String = #if ACHIEVEMENTS_ALLOWED 'achievements' #else null #end;
