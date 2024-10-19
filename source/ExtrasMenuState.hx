@@ -131,9 +131,9 @@ class ExtrasMenuState extends MusicBeatState
 		creditsbutton.flipX = false; //You should have already animated it in the right position in Animate
 		menuItems.add(creditsbutton);
 
-	  var mchar:FlxSprite = new FlxSprite(238, 199).loadGraphic(Paths.image('backgrounds/$name'));
+                var mchar:FlxSprite = new FlxSprite(238, 199).loadGraphic(Paths.image('backgrounds/$name'));
 		mchar.scrollFactor.set(0, 0);
-		add(mchar);
+		menuItems.add(mchar);
 	}
 
 	var selectedSomethin:Bool = false;
