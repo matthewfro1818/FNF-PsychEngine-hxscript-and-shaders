@@ -131,25 +131,25 @@ class MainMenuState extends MusicBeatState
 		if(optionShit.length < 6) scr = 0;
 		playbutton.scrollFactor.set(0, scr);
 		playbutton.flipX = false; //You should have already animated it in the right position in Animate
-		add(playbutton);
+		menuItems.add(playbutton);
 
 		var extrasbutton:FlxSprite = new FlxSprite(269, 482).loadGraphic(Paths.image('mainmenu/extras')); //Thanks to EIT for the tutorial
 		var scr:Float = (optionShit.length - 4) * 0.135;
 		if(optionShit.length < 6) scr = 0;
 		extrasbutton.scrollFactor.set(0, scr);
 		extrasbutton.flipX = false; //You should have already animated it in the right position in Animate
-		add(extrasbutton);
+		menuItems.add(extrasbutton);
 
 		var optionsbutton:FlxSprite = new FlxSprite(269, 702).loadGraphic(Paths.image('mainmenu/options')); //Thanks to EIT for the tutorial
 		var scr:Float = (optionShit.length - 4) * 0.135;
 		if(optionShit.length < 6) scr = 0;
 		optionsbutton.scrollFactor.set(0, scr);
 		optionsbutton.flipX = false; //You should have already animated it in the right position in Animate
-		add(optionsbutton);
+		menuItems.add(optionsbutton);
 
 	        var mchar:FlxSprite = new FlxSprite(238, 199).loadGraphic(Paths.image('backgrounds/$name'));
 		mchar.scrollFactor.set(0, 0);
-		add(mchar);
+		menuItems.add(mchar);
 
 	  var mchar:FlxSprite = new FlxSprite(238, 199).loadGraphic(Paths.image('backgrounds/$name'));
 		mchar.scrollFactor.set(0, 0);
