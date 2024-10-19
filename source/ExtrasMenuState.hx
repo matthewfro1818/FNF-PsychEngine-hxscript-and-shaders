@@ -1,29 +1,25 @@
-package;
+package states;
 
 import flixel.FlxObject;
-import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import lime.app.Application;
 import states.editors.MasterEditorMenu;
 import options.OptionsState;
-import backend.MusicBeatState;
 
-enum ExtrasMenuColumn
-{
+enum MainMenuColumn {
 	LEFT;
 	CENTER;
 	RIGHT;
 }
 
-class ExtrasMenuState extends MusicBeatState
+class MainMenuState extends MusicBeatState
 {
-	public static var psychEngineVersion:String = '1.0-prerelease'; // This is also used for Discord RPC
+	public static var psychEngineVersion:String = '1.0'; // This is also used for Discord RPC
 	public static var curSelected:Int = 0;
-	public static var curColumn:ExtrasMenuColumn = LEFT;
+	public static var curColumn:MainMenuColumn = CENTER;
 	var allowMouse:Bool = true; //Turn this off to block mouse movement in menus
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
-	var char:FlxSprite;
 	var leftItem:FlxSprite;
 	var rightItem:FlxSprite;
 
@@ -55,7 +51,7 @@ class ExtrasMenuState extends MusicBeatState
 		persistentUpdate = persistentDraw = true;
 
 		var yScroll:Float = 0.25;
-		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('backgrounds/space'));
+		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
 		bg.antialiasing = ClientPrefs.data.antialiasing;
 		bg.scrollFactor.set(0, yScroll);
 		bg.setGraphicSize(Std.int(bg.width * 1.175));
@@ -66,17 +62,21 @@ class ExtrasMenuState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		magenta = new FlxSprite(-80).loadGraphic(Paths.image('backgrounds/space'));
+		magenta = new FlxSprite(-80).loadGraphic(Paths.image(‎'backgrounds/space'‎));
+		magenta.antialiasing = ClientPrefs.data.antialiasing;
 		magenta.scrollFactor.set(0, yScroll);
+		magenta.setGraphicSize(Std.int(magenta.width * 1.175));
 		magenta.updateHitbox();
 		magenta.screenCenter();
 		add(magenta);
 
-		var magenta2 = new FlxSprite(-80).loadGraphic(Paths.image('backgrounds/thing'));
-		magenta2.scrollFactor.set(0, yScroll);
-		magenta2.updateHitbox();
-		magenta2.screenCenter();
-		add(magenta2);
+		var magenta2:FlxSprite = new FlxSprite((-80).loadGraphic(Paths.image(‎'backgrounds/thing'‎));
+		magenta.antialiasing = ClientPrefs.data.antialiasing;
+		magenta.scrollFactor.set(0, yScroll);
+		magenta.setGraphicSize(Std.int(magenta.width * 1.175));
+		magenta.updateHitbox();
+		magenta.screenCenter();
+		add(magenta);
 
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
@@ -98,11 +98,11 @@ class ExtrasMenuState extends MusicBeatState
 
 		var psychVer:FlxText = new FlxText(12, FlxG.height - 44, 0, "Psych Engine v" + psychEngineVersion, 12);
 		psychVer.scrollFactor.set();
-		psychVer.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		psychVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(psychVer);
 		var fnfVer:FlxText = new FlxText(12, FlxG.height - 24, 0, "Friday Night Funkin' v" + Application.current.meta.get('version'), 12);
 		fnfVer.scrollFactor.set();
-		fnfVer.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		fnfVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(fnfVer);
 		changeItem();
 
@@ -116,8 +116,6 @@ class ExtrasMenuState extends MusicBeatState
 		Achievements.reloadList();
 		#end
 		#end
-
-		addTouchPad('NONE', 'E');
 
 		super.create();
 
@@ -265,10 +263,10 @@ class ExtrasMenuState extends MusicBeatState
 				selectedSomethin = true;
 				FlxG.mouse.visible = false;
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new states.MainMenuState());
+				MusicBeatState.switchState(new TitleState());
 			}
 
-			if (controls.ACCEPT || (FlxG.mouse.overlaps(menuItems, FlxG.camera) && FlxG.mouse.justPressed && allowMouse))
+			if (controls.ACCEPT || (FlxG.mouse.justPressed && allowMouse))
 			{
 				FlxG.sound.play(Paths.sound('confirmMenu'));
 				if (optionShit[curSelected] != 'donate')
@@ -300,6 +298,7 @@ class ExtrasMenuState extends MusicBeatState
 					{
 						switch (option)
 						{
+							case 'story_mode':
 							case 'play':
 								FlxG.switchState(new PlayMenuState());
 							case 'extras':
@@ -343,12 +342,14 @@ class ExtrasMenuState extends MusicBeatState
 				}
 				else CoolUtil.browserLoad('https://ninja-muffin24.itch.io/funkin');
 			}
-			else if (controls.justPressed('debug_1') || touchPad.buttonE.justPressed)
+			#if desktop
+			if (controls.justPressed('debug_1'))
 			{
 				selectedSomethin = true;
 				FlxG.mouse.visible = false;
 				MusicBeatState.switchState(new MasterEditorMenu());
 			}
+			#end
 		}
 
 		super.update(elapsed);
