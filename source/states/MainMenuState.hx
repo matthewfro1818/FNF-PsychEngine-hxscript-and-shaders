@@ -1,12 +1,15 @@
-package states;
+package;
 
 import flixel.FlxObject;
+import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import lime.app.Application;
 import states.editors.MasterEditorMenu;
 import options.OptionsState;
+import backend.MusicBeatState;
 
-enum MainMenuColumn {
+enum MainMenuColumn
+{
 	LEFT;
 	CENTER;
 	RIGHT;
@@ -14,20 +17,21 @@ enum MainMenuColumn {
 
 class MainMenuState extends MusicBeatState
 {
-	public static var psychEngineVersion:String = '1.0'; // This is also used for Discord RPC
+	public static var psychEngineVersion:String = '1.0-prerelease'; // This is also used for Discord RPC
 	public static var curSelected:Int = 0;
-	public static var curColumn:MainMenuColumn = CENTER;
+	public static var curColumn:MainMenuColumn = LEFT;
 	var allowMouse:Bool = true; //Turn this off to block mouse movement in menus
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
+	var char:FlxSprite;
 	var leftItem:FlxSprite;
 	var rightItem:FlxSprite;
 
 	//Centered/Text options
 	var optionShit:Array<String> = [
-		'play',
-		'extras',
-		'options'
+		#if MODS_ALLOWED 'mods', #end
+		#if DISCORD_ALLOWED 'discord', #end
+		'credits'
 	];
 
 	var leftOption:String = #if ACHIEVEMENTS_ALLOWED 'achievements' #else null #end;
@@ -51,7 +55,7 @@ class MainMenuState extends MusicBeatState
 		persistentUpdate = persistentDraw = true;
 
 		var yScroll:Float = 0.25;
-		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image(‎'backgrounds/space'));
+		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('backgrounds/space'));
 		bg.antialiasing = ClientPrefs.data.antialiasing;
 		bg.scrollFactor.set(0, yScroll);
 		bg.setGraphicSize(Std.int(bg.width * 1.175));
@@ -59,17 +63,20 @@ class MainMenuState extends MusicBeatState
 		bg.screenCenter();
 		add(bg);
 
-		var bg2:FlxSprite = new FlxSprite((-80).loadGraphic(Paths.image(‎'backgrounds/thing'‎));
-		bg2.antialiasing = ClientPrefs.data.antialiasing;
-		bg2.scrollFactor.set(0, yScroll);
-		bg2.setGraphicSize(Std.int(bg2.width * 1.175));
-		bg2.updateHitbox();
-		bg2.screenCenter();
-		add(bg2);
-
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
+		magenta = new FlxSprite(-80).loadGraphic(Paths.image('backgrounds/space'));
+		magenta.scrollFactor.set(0, yScroll);
+		magenta.updateHitbox();
+		magenta.screenCenter();
+		add(magenta);
+
+		var magenta2 = new FlxSprite(-80).loadGraphic(Paths.image('backgrounds/thing'));
+		magenta2.scrollFactor.set(0, yScroll);
+		magenta2.updateHitbox();
+		magenta2.screenCenter();
+		add(magenta2);
 
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
@@ -91,11 +98,11 @@ class MainMenuState extends MusicBeatState
 
 		var psychVer:FlxText = new FlxText(12, FlxG.height - 44, 0, "Psych Engine v" + psychEngineVersion, 12);
 		psychVer.scrollFactor.set();
-		psychVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		psychVer.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(psychVer);
 		var fnfVer:FlxText = new FlxText(12, FlxG.height - 24, 0, "Friday Night Funkin' v" + Application.current.meta.get('version'), 12);
 		fnfVer.scrollFactor.set();
-		fnfVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		fnfVer.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(fnfVer);
 		changeItem();
 
@@ -109,6 +116,8 @@ class MainMenuState extends MusicBeatState
 		Achievements.reloadList();
 		#end
 		#end
+
+		addTouchPad('NONE', 'E');
 
 		super.create();
 
@@ -139,6 +148,10 @@ class MainMenuState extends MusicBeatState
 		add(optionsbutton);
 
 	        var mchar:FlxSprite = new FlxSprite(238, 199).loadGraphic(Paths.image('backgrounds/$name'));
+		mchar.scrollFactor.set(0, 0);
+		add(mchar);
+
+	  var mchar:FlxSprite = new FlxSprite(238, 199).loadGraphic(Paths.image('backgrounds/$name'));
 		mchar.scrollFactor.set(0, 0);
 		add(mchar);
 	}
@@ -262,10 +275,10 @@ class MainMenuState extends MusicBeatState
 				selectedSomethin = true;
 				FlxG.mouse.visible = false;
 				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new TitleState());
+				MusicBeatState.switchState(new states.MainMenuState());
 			}
 
-			if (controls.ACCEPT || (FlxG.mouse.justPressed && allowMouse))
+			if (controls.ACCEPT || (FlxG.mouse.overlaps(menuItems, FlxG.camera) && FlxG.mouse.justPressed && allowMouse))
 			{
 				FlxG.sound.play(Paths.sound('confirmMenu'));
 				if (optionShit[curSelected] != 'donate')
@@ -300,24 +313,24 @@ class MainMenuState extends MusicBeatState
 							case 'play':
 								FlxG.switchState(new PlayMenuState());
 							case 'extras':
-								FlxG.switchState(new ExtrasMenuState());
+								FlxG.switchState(new MainMenuState());
 							case 'story_mode':
-								MusicBeatState.switchState(new StoryMenuState());
+								MusicBeatState.switchState(new states.StoryMenuState());
 							case 'freeplay':
-								MusicBeatState.switchState(new FreeplayState());
+								MusicBeatState.switchState(new states.FreeplayState());
 
 							#if MODS_ALLOWED
 							case 'mods':
-								MusicBeatState.switchState(new ModsMenuState());
+								MusicBeatState.switchState(new states.ModsMenuState());
 							#end
 
 							#if ACHIEVEMENTS_ALLOWED
 							case 'achievements':
-								MusicBeatState.switchState(new AchievementsMenuState());
+								MusicBeatState.switchState(new states.AchievementsMenuState());
 							#end
 
 							case 'credits':
-								MusicBeatState.switchState(new CreditsState());
+								MusicBeatState.switchState(new states.CreditsState());
 							case 'options':
 								MusicBeatState.switchState(new OptionsState());
 								OptionsState.onPlayState = false;
@@ -340,14 +353,12 @@ class MainMenuState extends MusicBeatState
 				}
 				else CoolUtil.browserLoad('https://ninja-muffin24.itch.io/funkin');
 			}
-			#if desktop
-			if (controls.justPressed('debug_1'))
+			else if (controls.justPressed('debug_1') || touchPad.buttonE.justPressed)
 			{
 				selectedSomethin = true;
 				FlxG.mouse.visible = false;
 				MusicBeatState.switchState(new MasterEditorMenu());
 			}
-			#end
 		}
 
 		super.update(elapsed);
